@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>gpt</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tinos:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --ui-width: 300px;
+        }
+
+        body {
+            background-color: rgba(241, 239, 231);
+            margin: 0;
+        }
+
+        * {
+            font-family: 'Tinos', 'Times New Roman', Times, serif;
+            font-weight: 700;
+        }
+
+        .logo-png {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            z-index: 999;
+
+            width: 20vh;
+            height: auto;
+        }
+
+        .user-interface-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+
+            min-height: 100vh;
+
+            z-index: 1;
+        }
+
+        .voice-input {
+            width: var(--ui-width);
+            height: 40px;
+            box-sizing: border-box;
+            padding: 8px 12px;
+            font-size: 16px;
+        }
+
+        .prompt-textarea {
+            display: block;
+            width: var(--ui-width);
+            box-sizing: border-box;
+            
+            height: 40px;
+            min-height: 40px;
+            padding: 8px 12px;
+            line-height: 24px;
+            font-size: 16px;
+            
+            resize: none;
+            overflow: hidden;
+        }
+    </style>
+    <script>
+        function resizeToText(element) {
+            element.style.height = "0px";
+            element.style.height = (element.scrollHeight) + "px";
+        }
+
+        window.onload = function() {
+            const tx = document.querySelector('.prompt-textarea');
+            resizeToText(tx);
+        };
+    </script>
+</head>
+<body>
+    <img src="./assets/logo.png" class="logo-png">
+
+    <div class="user-interface-container">
+        <input class="voice-input" type="password" id="voice" placeholder="Enter voice">
+
+        <textarea class="prompt-textarea" oninput="resizeToText(this)" placeholder="Start typing..."></textarea>
+    </div>
+</body>
+</html>
