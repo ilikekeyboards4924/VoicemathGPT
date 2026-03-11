@@ -3,10 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>gpt</title>
+    <title>VoicemathGPT</title>
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Tinos:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+
+    <link rel="icon" type="image/x-icon" href="/assets/favicon.ico">
 
     <style>
         :root {
@@ -36,13 +39,22 @@
         .user-interface-container {
             display: flex;
             flex-direction: column;
+            
             align-items: center;
-            justify-content: center;
-            gap: 20px;
+            justify-content: flex-start;
 
-            min-height: 100vh;
-
+            padding-top: 20vh;
+            
+            min-height: 80vh;
             z-index: 1;
+        }
+
+        .greeting-div {
+            font-size: 10vh;
+            font-style: italic;
+            color: rgba(22, 18, 211);
+
+            text-align: center;
         }
 
         .voice-input {
@@ -51,6 +63,12 @@
             box-sizing: border-box;
             padding: 8px 12px;
             font-size: 16px;
+
+            margin-top: 7.5vh;
+            margin-bottom: 25px;
+
+            border: 1px solid #aaa;
+            border-radius: 8px;
         }
 
         .prompt-textarea {
@@ -63,10 +81,49 @@
             padding: 8px 12px;
             line-height: 24px;
             font-size: 16px;
+
+            margin-bottom: 25px;
+
+            border: 1px solid #aaa;
+            border-radius: 8px;
             
             resize: none;
             overflow: hidden;
         }
+
+        .submit-button {
+            width: var(--ui-width);
+            height: 40px;
+            box-sizing: border-box;
+
+            background-color: rgba(22, 18, 211);
+
+            font-size: 16px;
+            color: white;
+            font-style: italic;
+
+            border-radius: 8px;
+
+            outline: none;
+            border: none;
+            appearance: none;
+
+            background: linear-gradient(90deg, #3e76f0, #1612d3, #3e76f0);
+            background-size: 200% 100%;
+            background-position: 0% 0%;
+            transition: background-position 0.1s;
+
+            animation: gradient-slide 4.5s infinite linear;
+        }
+
+        @keyframes gradient-slide {
+            from { background-position: 0% 0%; }
+            to { background-position: 200% 0%; }
+        }
+
+        /* .submit-button:active {
+            background-color: rgba(12, 8, 201);
+        } */
     </style>
     <script>
         function resizeToText(element) {
@@ -74,19 +131,35 @@
             element.style.height = (element.scrollHeight) + "px";
         }
 
-        window.onload = function() {
-            const tx = document.querySelector('.prompt-textarea');
-            resizeToText(tx);
-        };
+        function hideGreeting() {
+            let message = document.querySelector('.greeting-div');
+            if (!message) return;
+
+            let currentSize = parseFloat(window.getComputedStyle(message).fontSize);
+            let vhUnit = (currentSize / window.innerHeight) * 100;
+
+            if (vhUnit > 0.1) {
+                message.style.fontSize = (vhUnit - 0.5) + "vh";
+                requestAnimationFrame(hideGreeting);
+            } else {
+                message.style.display = "none";
+            }
+
+            document.querySelector('.submit-button').style.display = "none";
+        }
     </script>
 </head>
 <body>
     <img src="./assets/logo.png" class="logo-png">
 
     <div class="user-interface-container">
+        <div class="greeting-div">Ask me anything...</div>
+
         <input class="voice-input" type="password" id="voice" placeholder="Enter voice">
 
         <textarea class="prompt-textarea" oninput="resizeToText(this)" placeholder="Start typing..."></textarea>
+
+        <button class="submit-button" onclick="hideGreeting()">Ask</button>
     </div>
 </body>
 </html>
