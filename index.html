@@ -9,7 +9,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Tinos:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
 
-    <link rel="icon" type="image/x-icon" href="/assets/favicon.ico">
+    <link rel="icon" type="image/x-icon" href="assets/favicon.ico">
 
     <style>
         :root {
@@ -139,7 +139,7 @@
             let vhUnit = (currentSize / window.innerHeight) * 100;
 
             if (vhUnit > 0.1) {
-                message.style.fontSize = (vhUnit - 0.5) + "vh";
+                message.style.fontSize = (vhUnit - 0.2) + "vh";
                 requestAnimationFrame(hideGreeting);
             } else {
                 message.style.display = "none";
