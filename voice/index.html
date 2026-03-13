@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VoicemathGPT</title>
+    <title>Voice Chat</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Tinos:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
 
-    <link rel="icon" type="image/x-icon" href="assets/favicon.ico">
+    <link rel="icon" type="image/x-icon" href="../assets/favicon.ico">
 
     <style>
         body {
@@ -68,8 +68,8 @@
             }
         }
 
-        .homepage-button {
-            background-color: rgb(86, 110, 218);
+        .submit-button {
+            background-color: rgba(22, 18, 211);
 
             width: auto;
 
@@ -84,6 +84,15 @@
             display: inline-block;
             border-radius: 8px;
             margin-bottom: 4vh;
+            
+            background: linear-gradient(90deg, #3e76f0, #1612d3, #3e76f0);
+            background-size: 200% 100%;
+            animation: gradient-slide 4.5s infinite linear;
+        }
+
+        @keyframes gradient-slide {
+            from { background-position: 0% 0%; }
+            to { background-position: 200% 0%; }
         }
 
         .logo-png {
@@ -101,13 +110,9 @@
 <body>
     
     <div class="user-interface-container">
-        <div class="content-group">
-            <div class="greeting-div">Choose the conversation medium.</div>
-            <a href="./voice/" class="homepage-button">Voice chat</a>
-            <a href="./text/" class="homepage-button">Text-based chat</a>
-        </div>
+        <div></div>
 
-        <img src="./assets/logo.png" class="logo-png">
+        <img src="../assets/logo.png" class="logo-png">
     </div>
 </body>
 </html>
