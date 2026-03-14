@@ -56,85 +56,20 @@
 <body>
     
     <div class="user-interface-container">
-        <button id="recordButton">Start Recording</button>
+        <textarea id="chatMessage" placeholder="textarea until I get real-time voice transcription working" style="width: 500px; height: 50px;"></textarea>
+        <button id="sendButton" onclick="onSend()">Send Message</button>
         <div id="test"></div>
 
         <img src="../assets/logo.png" class="logo-png">
     </div>
 
     <script>
-        const recordBtn = document.getElementById('recordButton');
-        const displayDiv = document.getElementById('test');
+        async function onSend() {
+            const response = await fetch('https://voicemathgpt.ilikekeyboards4924.workers.dev/');
 
-        let mediaRecorder;
-        let audioChunks = [];
-        let recognition;
+            const data = await response.json();
 
-        // 1. Setup Speech Recognition
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        if (SpeechRecognition) {
-            recognition = new SpeechRecognition();
-            recognition.continuous = true;
-            recognition.interimResults = true;
-            recognition.lang = 'en-US';
-
-            console.log("YAAAOOOIIIIII!!!!!");
-
-            recognition.onresult = (event) => {
-                let transcript = '';
-                for (let i = event.resultIndex; i < event.results.length; i++) {
-                    transcript += event.results[i][0].transcript;
-                }
-                displayDiv.innerText = transcript; // Update the "Work in progress" text live
-            };
-        }
-
-        // 2. Button Click Handler
-        recordBtn.addEventListener('click', async () => {
-            // Toggle STOP
-            if (mediaRecorder && mediaRecorder.state === "recording") {
-                mediaRecorder.stop();
-                if (recognition) recognition.stop();
-                recordBtn.innerText = "Start Recording";
-                return;
-            }
-
-            // Toggle START
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                
-                // Setup MediaRecorder for server-side audio
-                mediaRecorder = new MediaRecorder(stream);
-                audioChunks = [];
-                mediaRecorder.ondataavailable = (e) => audioChunks.push(e.data);
-                mediaRecorder.onstop = async () => {
-                    const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
-                    await sendAudioToServer(audioBlob);
-                };
-
-                mediaRecorder.start();
-                if (recognition) {
-                    displayDiv.innerText = "Listening...";
-                    recognition.start();
-                }
-                
-                recordBtn.innerText = "Stop Recording";
-            } catch (err) {
-                console.error("Mic access denied or error:", err);
-                displayDiv.innerText = "Mic access denied.";
-            }
-        });
-
-        async function sendAudioToServer(blob) {
-            const formData = new FormData();
-            formData.append('audio', blob, 'recording.webm');
-            
-            // Replace with your RunPod or server URL
-            try {
-                await fetch('YOUR_SERVER_URL', { method: 'POST', body: formData });
-            } catch (e) {
-                console.error("Upload failed", e);
-            }
+            console.log(data);
         }
     </script>
 </body>
