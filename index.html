@@ -32,11 +32,11 @@
             justify-content: space-between; 
 
             min-height: 100dvh; 
-            padding: 5vh 0 0 0;
+            padding: 10dvh 0 0 0;
         }
         @media (min-height: 800px) and (min-width: 1024px) {
             .user-interface-container {
-                padding: 20vh 0 0 0;
+                padding: 20dvh 0 0 0;
             }
         }
 
@@ -50,21 +50,19 @@
 
         .greeting-div {
             width: 100%;
-            max-width: 100vw;
-            padding: 0 5vw;
+            max-width: 100dvw;
+            padding: 0 5dvw;
 
-            font-size: clamp(40px, 6.5vh, 100px);
+            font-size: clamp(40px, 6.5dvh, 100px);
             font-style: italic;
             color: rgba(22, 18, 211);
             text-align: center;
             
-            margin-bottom: 4.5vh;
+            margin-bottom: 7.5dvh;
         }
         @media (min-height: 800px) and (min-width: 1024px) {
             .greeting-div {
-                font-size: clamp(65px, 10vh, 200px);
-
-                margin-bottom: 7.5vh;
+                font-size: clamp(65px, 10dvh, 200px);
             }
         }
 
@@ -73,7 +71,7 @@
 
             width: auto;
 
-            font-size: clamp(25px, 5vh, 35px);
+            font-size: clamp(25px, 5dvh, 35px);
             color: white;
             font-style: italic;
             text-decoration: none;
@@ -83,27 +81,23 @@
             
             display: inline-block;
             border-radius: 8px;
-            margin-bottom: 4vh;
+            margin-bottom: 4dvh;
         }
 
         .logo-png {
             display: block;
             align-self: flex-start;
             
-            width: 20vh;
+            width: 20dvh;
             height: auto;
 
             margin-left: 20px;
             margin-bottom: 20px;
         }
-        @media (min-height: 800px) and (min-width: 1024px) {
-            .logo-png {
-                margin-bottom: 20px;
-            }
-        }
     </style>
 </head>
 <body>
+    
     <div class="user-interface-container">
         <div class="content-group">
             <div class="greeting-div">Choose the conversation medium.</div>
@@ -113,17 +107,5 @@
 
         <img src="./assets/logo.png" class="logo-png">
     </div>
-    <script>
-        function openFullscreen() {
-            const elem = document.documentElement;
-            if (elem.requestFullscreen) {
-                elem.requestFullscreen();
-            } else if (elem.webkitRequestFullscreen) {
-                elem.webkitRequestFullscreen();
-            } else if (elem.msRequestFullscreen) {
-                elem.msRequestFullscreen();
-            }
-        }
-    </script>
 </body>
 </html>
