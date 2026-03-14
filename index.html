@@ -94,23 +94,30 @@
             margin-bottom: 4dvh;
         }
 
-        .logo-link {
-            align-self: flex-start;
-            display: block;
+        .footer-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            width: 100%;
+            padding: 0 20px 20px 20px;
+        }
 
+        .logo-link {
+            display: block;
             line-height: 0;
             text-decoration: none;
-        
-            margin-left: 20px;
-            margin-bottom: 20px;
         }
 
         .logo-png {
             display: block;
-            align-self: flex-start;
-            
             width: 20dvh;
             height: auto;
+        }
+
+        .old-voicemath-redirect-link {
+            display: block;
+            line-height: 1;
+            text-decoration: none;
         }
     </style>
 </head>
@@ -122,10 +129,16 @@
             <a href="./voice/" class="homepage-button">Voice chat</a>
             <a href="./text/" class="homepage-button">Text-based chat</a>
         </div>
-
-        <a href="./" class="logo-link">
-            <img src="./assets/logo.png" class="logo-png">
-        </a>
+        
+        <div class="footer-row">
+            <a href="./" class="logo-link">
+                <img src="./assets/logo.png" class="logo-png">
+            </a>
+            
+            <a href="https://old.voicemath.cc" class="old-voicemath-redirect-link">
+                Go to the old voicemath
+            </a>
+        </div>
     </div>
 </body>
 </html>
