@@ -39,7 +39,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: space-between; 
+            justify-content: space-between;
 
             min-height: 100dvh; 
             padding: 10dvh 0 0 0;
@@ -94,15 +94,23 @@
             margin-bottom: 4dvh;
         }
 
+        .logo-link {
+            align-self: flex-start;
+            display: block;
+
+            line-height: 0;
+            text-decoration: none;
+        
+            margin-left: 20px;
+            margin-bottom: 20px;
+        }
+
         .logo-png {
             display: block;
             align-self: flex-start;
             
             width: 20dvh;
             height: auto;
-
-            margin-left: 20px;
-            margin-bottom: 20px;
         }
     </style>
 </head>
@@ -115,7 +123,9 @@
             <a href="./text/" class="homepage-button">Text-based chat</a>
         </div>
 
-        <img src="./assets/logo.png" class="logo-png">
+        <a href="https://www.voicemath.cc" class="logo-link">
+            <img src="./assets/logo.png" class="logo-png">
+        </a>
     </div>
 </body>
 </html>
