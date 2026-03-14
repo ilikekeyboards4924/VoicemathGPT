@@ -31,10 +31,9 @@
             align-items: center;
             justify-content: space-between; 
 
-            min-height: 100vh; 
-            padding: 10vh 0 0 0;
+            min-height: 100dvh; 
+            padding: 5vh 0 0 0;
         }
-
         @media (min-height: 800px) and (min-width: 1024px) {
             .user-interface-container {
                 padding: 20vh 0 0 0;
@@ -59,12 +58,13 @@
             color: rgba(22, 18, 211);
             text-align: center;
             
-            margin-bottom: 7.5vh;
+            margin-bottom: 4.5vh;
         }
-
         @media (min-height: 800px) and (min-width: 1024px) {
             .greeting-div {
                 font-size: clamp(65px, 10vh, 200px);
+
+                margin-bottom: 7.5vh;
             }
         }
 
@@ -94,12 +94,16 @@
             height: auto;
 
             margin-left: 20px;
-            margin-bottom: 20px;
+            margin-bottom: 80px;
+        }
+        @media (min-height: 800px) and (min-width: 1024px) {
+            .logo-png {
+                margin-bottom: 20px;
+            }
         }
     </style>
 </head>
 <body>
-    
     <div class="user-interface-container">
         <div class="content-group">
             <div class="greeting-div">Choose the conversation medium.</div>
@@ -109,5 +113,17 @@
 
         <img src="./assets/logo.png" class="logo-png">
     </div>
+    <script>
+        function openFullscreen() {
+            const elem = document.documentElement;
+            if (elem.requestFullscreen) {
+                elem.requestFullscreen();
+            } else if (elem.webkitRequestFullscreen) {
+                elem.webkitRequestFullscreen();
+            } else if (elem.msRequestFullscreen) {
+                elem.msRequestFullscreen();
+            }
+        }
+    </script>
 </body>
 </html>

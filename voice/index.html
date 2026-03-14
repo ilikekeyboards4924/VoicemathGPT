@@ -41,60 +41,6 @@
             }
         }
 
-        .content-group {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-
-            width: 100%;
-        }
-
-        .greeting-div {
-            width: 100%;
-            max-width: 100vw;
-            padding: 0 5vw;
-
-            font-size: clamp(40px, 6.5vh, 100px);
-            font-style: italic;
-            color: rgba(22, 18, 211);
-            text-align: center;
-            
-            margin-bottom: 7.5vh;
-        }
-
-        @media (min-height: 800px) and (min-width: 1024px) {
-            .greeting-div {
-                font-size: clamp(65px, 10vh, 200px);
-            }
-        }
-
-        .submit-button {
-            background-color: rgba(22, 18, 211);
-
-            width: auto;
-
-            font-size: clamp(25px, 5vh, 35px);
-            color: white;
-            font-style: italic;
-            text-decoration: none;
-            text-align: center;
-            
-            padding: 10px 40px;
-            
-            display: inline-block;
-            border-radius: 8px;
-            margin-bottom: 4vh;
-            
-            background: linear-gradient(90deg, #3e76f0, #1612d3, #3e76f0);
-            background-size: 200% 100%;
-            animation: gradient-slide 4.5s infinite linear;
-        }
-
-        @keyframes gradient-slide {
-            from { background-position: 0% 0%; }
-            to { background-position: 200% 0%; }
-        }
-
         .logo-png {
             display: block;
             align-self: flex-start;
@@ -110,9 +56,86 @@
 <body>
     
     <div class="user-interface-container">
-        <div></div>
+        <button id="recordButton">Start Recording</button>
+        <div id="test"></div>
 
         <img src="../assets/logo.png" class="logo-png">
     </div>
+
+    <script>
+        const recordBtn = document.getElementById('recordButton');
+        const displayDiv = document.getElementById('test');
+
+        let mediaRecorder;
+        let audioChunks = [];
+        let recognition;
+
+        // 1. Setup Speech Recognition
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (SpeechRecognition) {
+            recognition = new SpeechRecognition();
+            recognition.continuous = true;
+            recognition.interimResults = true;
+            recognition.lang = 'en-US';
+
+            console.log("YAAAOOOIIIIII!!!!!");
+
+            recognition.onresult = (event) => {
+                let transcript = '';
+                for (let i = event.resultIndex; i < event.results.length; i++) {
+                    transcript += event.results[i][0].transcript;
+                }
+                displayDiv.innerText = transcript; // Update the "Work in progress" text live
+            };
+        }
+
+        // 2. Button Click Handler
+        recordBtn.addEventListener('click', async () => {
+            // Toggle STOP
+            if (mediaRecorder && mediaRecorder.state === "recording") {
+                mediaRecorder.stop();
+                if (recognition) recognition.stop();
+                recordBtn.innerText = "Start Recording";
+                return;
+            }
+
+            // Toggle START
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                
+                // Setup MediaRecorder for server-side audio
+                mediaRecorder = new MediaRecorder(stream);
+                audioChunks = [];
+                mediaRecorder.ondataavailable = (e) => audioChunks.push(e.data);
+                mediaRecorder.onstop = async () => {
+                    const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                    await sendAudioToServer(audioBlob);
+                };
+
+                mediaRecorder.start();
+                if (recognition) {
+                    displayDiv.innerText = "Listening...";
+                    recognition.start();
+                }
+                
+                recordBtn.innerText = "Stop Recording";
+            } catch (err) {
+                console.error("Mic access denied or error:", err);
+                displayDiv.innerText = "Mic access denied.";
+            }
+        });
+
+        async function sendAudioToServer(blob) {
+            const formData = new FormData();
+            formData.append('audio', blob, 'recording.webm');
+            
+            // Replace with your RunPod or server URL
+            try {
+                await fetch('YOUR_SERVER_URL', { method: 'POST', body: formData });
+            } catch (e) {
+                console.error("Upload failed", e);
+            }
+        }
+    </script>
 </body>
 </html>
