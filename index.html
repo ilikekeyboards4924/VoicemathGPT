@@ -99,13 +99,19 @@
             justify-content: space-between;
             align-items: flex-end;
             width: 100%;
-            padding: 0 20px 20px 20px;
+            padding: 0 5px 20px 5px;
+        }
+        @media (min-width: 400px) {
+            .footer-row {
+                padding: 0 20px 20px 20px;
+            }
         }
 
         .logo-link {
             display: block;
             line-height: 0;
             text-decoration: none;
+            margin-right: 10px;
         }
 
         .logo-png {
@@ -116,8 +122,16 @@
 
         .old-voicemath-redirect-link {
             display: block;
+            margin-left: 10px;
+            font-size: clamp(10px, 2.5dvh, 25px);
             line-height: 1;
+            text-align: center;
             text-decoration: none;
+        }
+        @media (min-height: 800px) and (min-width: 1024px) {
+            .old-voicemath-redirect-link {
+                font-size: clamp(10px, 5dvh, 25px);
+            }
         }
     </style>
 </head>
