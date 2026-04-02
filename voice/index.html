@@ -96,7 +96,7 @@
             <div id="status"></div>
         </div>
 
-        <div class="disclaimer">note: it could take up to 90 seconds for the voice assistant to respond.</div>
+        <div class="disclaimer">note: it could take a few minutes for the voice assistant to respond.</div>
 
         <a href="../" class="logo-link">
             <img src="../assets/logo.png" class="logo-png">
@@ -154,11 +154,11 @@
                     const data = await response.json();
 
                     if (data.status === "IN_QUEUE") {
-                        document.getElementById('status').innerText = "request enqueued...";
+                        document.getElementById('status').innerText = "stage 1: request enqueued...";
                     } else if ((data.status === "IN_PROGRESS" || data.status === "COMPLETED") && data.stream?.length === 0) {
-                        document.getElementById('status').innerText = "processing request and loading server-side assets...";
+                        document.getElementById('status').innerText = "stage 2: processing request and loading server-side assets...";
                     } else if ((data.status === "IN_PROGRESS" || data.status === "COMPLETED") && data.stream?.length > 0) {
-                        document.getElementById('status').innerText = "streaming audio data...";
+                        document.getElementById('status').innerText = "stage 3: streaming audio data...";
                     }
 
                     if (data.status === "CANCELLED") {
@@ -216,7 +216,7 @@
 
             nextChunkStartTimestamp = chunkStartTimestamp + audioBuffer.duration; // set the starting timestamp for the next chunk that gets received
 
-            document.getElementById('status').innerText = "playing audio...";
+            document.getElementById('status').innerText = "stage 3: playing audio...";
         }
     </script>
 </body>
