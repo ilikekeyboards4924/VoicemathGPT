@@ -79,7 +79,11 @@
     
     <div class="user-interface-container">
         <div class="controls">
-            <input id="voiceInput" placeholder="voice to use">
+            <select id="voiceInput">
+                <option value="brantley">brantley</option>
+                <option value="jasper">jasper</option>
+            </select>
+
             <textarea id="chatMessage" placeholder="textarea until I get real-time voice transcription working" style="width: 70vw; height: 50px;"></textarea>
             <button id="sendButton" onclick="runVoiceAssistant()">Send Message</button>
 
