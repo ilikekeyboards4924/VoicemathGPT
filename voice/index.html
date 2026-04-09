@@ -21,8 +21,6 @@
             font-family: 'Tinos', 'Times New Roman', Times, serif;
             font-weight: 700;
             box-sizing: border-box;
-
-            /* outline: 1px solid red !important; */
         }
 
         .user-interface-container {
@@ -45,7 +43,6 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-
             gap: 10px; 
         }
 
@@ -63,10 +60,8 @@
         .logo-link {
             align-self: flex-start;
             display: block;
-
             line-height: 0;
             text-decoration: none;
-        
             margin-left: 20px;
             margin-bottom: 20px;
         }
@@ -74,7 +69,6 @@
         .logo-png {
             display: block;
             align-self: flex-start;
-            
             width: 20dvh;
             height: auto;
         }
@@ -116,119 +110,93 @@
     </div>
 
     <script>
-        const workerUrl = 'https://voicemathgpt.ilikekeyboards4924.workers.dev/';
+        const apiUrl = 'https://api.voicemath.cc/ask'; // Updated URL
         let audioContext;
-        const sampleRate = 24000; // sample rate of the audio that will be received from the endpoint
-
-        let nextChunkStartTimestamp = 0; // this number is the timestamp of when the next chunk will start playing in the audio context
+        const sampleRate = 24000;
+        let nextChunkStartTimestamp = 0;
 
         async function runVoiceAssistant() {
-            // initialize the audio context when the user interacts with the page (on user gesture)
             if (!audioContext) audioContext = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: sampleRate });
             if (audioContext.state === 'suspended') await audioContext.resume();
 
+            const promptText = document.getElementById('chatMessage').value.trim();
+            const voiceSelection = document.getElementById('voiceInput').value.trim();
+            
+            if (!promptText) return;
+
             document.getElementById('status').innerText = 'starting...';
+            document.getElementById('sendButton').disabled = true; // Prevent spamming
 
             try {
-                // send a post request to the worker to start generating the audio
-                let payload = {
-                    input: {
-                        voice: document.getElementById('voiceInput').value.trim(),
-                        text: document.getElementById('chatMessage').value.trim(),
-                        // prompt: document.getElementById('chatMessage').value.trim(),
-                    }
-                };
-
-                const response = await fetch(workerUrl, {
+                const response = await fetch(apiUrl, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload),
+                    body: JSON.stringify({ prompt: promptText, voice: voiceSelection }),
                 });
 
-                console.log(`voice request sent at ${new Date().toLocaleString()}`);
+                if (!response.ok) throw new Error("Server error");
+
                 document.getElementById('chatMessage').value = '';
+                document.getElementById('status').innerText = "stage 2: processing...";
 
-                // wait for the response data and start polling runpod using the JOB id
-                const data = await response.json();
-                if (data.id) poll(data.id);
-            } catch (e) {
-                alert("error has occured" + e.message);
-            }
-        }
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                let bufferString = "";
+                
+                // Reset timing for new stream
+                nextChunkStartTimestamp = audioContext.currentTime + 0.1;
 
-        async function poll(jobId) {
-            // keep polling until the stream is finished
-            let isFinished = false;
-            while (!isFinished) {
-                try {
-                    // response and data from the response's json
-                    const response = await fetch(`${workerUrl}?jobId=${jobId}`);
-                    const data = await response.json();
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
 
-                    if (data.status === "IN_QUEUE") {
-                        document.getElementById('status').innerText = "stage 1: request enqueued...";
-                    } else if ((data.status === "IN_PROGRESS" || data.status === "COMPLETED") && data.stream?.length === 0) {
-                        document.getElementById('status').innerText = "stage 2: processing request and loading server-side assets...";
-                    } else if ((data.status === "IN_PROGRESS" || data.status === "COMPLETED") && data.stream?.length > 0) {
-                        document.getElementById('status').innerText = "stage 3: streaming audio data...";
+                    bufferString += decoder.decode(value, { stream: true });
+                    let lines = bufferString.split('\n');
+                    bufferString = lines.pop(); // Hold onto partial line
+
+                    for (const line of lines) {
+                        const base64 = line.trim();
+                        if (base64) {
+                            decodeAndPlay(base64);
+                        }
                     }
-
-                    if (data.status === "CANCELLED") {
-                        document.getElementById('status').innerText = "request was cancelled by the administrator.";
-                        break;
-                    } else if (data.status === "FAILED") {
-                        document.getElementById('status').innerText = "the request to the server failed.";
-                        break;
-                    } else if (data.status === "TIMED_OUT") {
-                        document.getElementById('status').innerText = "the request to the server timed out.";
-                        break;
-                    }
-
-                    // if the data contains a stream, iterate through the stream and play the audio chunks
-                    if (data.stream) {
-                        data.stream.forEach(chunk => {
-                            let base64 = (typeof chunk === 'object') ? chunk.output : chunk; // make sure we're getting the base64 string and not the object that contains the string
-                            if (base64) decodeAndPlay(base64);
-                        });
-                    }
-
-                    if (data.status === "COMPLETED") {
-                        document.getElementById('status').innerText = "audio finished playing.";
-                        isFinished = true;
-                    }
-                } catch (e) {
-                    console.error(e);
                 }
-                if (!isFinished) await new Promise(f => setTimeout(f, 50)); // only request every 50 ms to stop from being timed out / not overwhelm the server
+
+                document.getElementById('status').innerText = "audio finished playing.";
+            } catch (e) {
+                document.getElementById('status').innerText = "error has occurred: " + e.message;
+            } finally {
+                document.getElementById('sendButton').disabled = false;
             }
         }
 
         function decodeAndPlay(base64) {
-            // DECODING SECTION
-            const cleanBase64 = base64.replace(/[^A-Za-z0-9+/=]/g, ""); // remove whitespace
-            const binary = atob(cleanBase64); // convert base64 back into bytes
-            const buffer = new Uint8Array(binary.length); // create buffer that can hold (binary.length) bytes
-            for (let i = 0; i < binary.length; i++) {
-                buffer[i] = binary.charCodeAt(i); // convert the characters in (binary) into numbers in (buffer)
+            try {
+                const cleanBase64 = base64.replace(/[^A-Za-z0-9+/=]/g, "");
+                const binary = atob(cleanBase64);
+                const bytes = new Uint8Array(binary.length);
+                for (let i = 0; i < binary.length; i++) {
+                    bytes[i] = binary.charCodeAt(i);
+                }
+
+                const floatData = new Float32Array(bytes.buffer);
+                const audioBuffer = audioContext.createBuffer(1, floatData.length, sampleRate);
+                audioBuffer.getChannelData(0).set(floatData);
+
+                const source = audioContext.createBufferSource();
+                source.buffer = audioBuffer;
+                source.connect(audioContext.destination);
+
+                const now = audioContext.currentTime;
+                const chunkStartTimestamp = Math.max(nextChunkStartTimestamp, now);
+                
+                source.start(chunkStartTimestamp);
+                nextChunkStartTimestamp = chunkStartTimestamp + audioBuffer.duration;
+
+                document.getElementById('status').innerText = "stage 3: playing audio...";
+            } catch (e) {
+                console.error("Decoding error", e);
             }
-
-            const floatData = new Float32Array(buffer.buffer); // convert the bytes in (buffer) into an array of float32's. 4 bytes in (buffer) = one float32 number in (floatData)
-
-
-            // PLAYING SECTION
-            const audioBuffer = audioContext.createBuffer(1, floatData.length, sampleRate); // mono audio (1 channel), make sure buffer can hold (floatData.length) float32's, play at (sampleRate)
-            audioBuffer.getChannelData(0).set(floatData); // dump the data into the first channel
-
-            const source = audioContext.createBufferSource(); // create a BufferSource to actually play the audio
-            source.buffer = audioBuffer // set the source's buffer to be the audioBuffer that was just created
-            source.connect(audioContext.destination); // set the BufferSource's destination to be the audioContext's destination (user's headphones / speaker)
-
-            const chunkStartTimestamp = Math.max(nextChunkStartTimestamp, audioContext.currentTime); // if the time to play audio at (nextChunkStartTimestamp) has already passed, just play the audio immediately
-            source.start(chunkStartTimestamp); // timestamp when the audio in the source will start playing
-
-            nextChunkStartTimestamp = chunkStartTimestamp + audioBuffer.duration; // set the starting timestamp for the next chunk that gets received
-
-            document.getElementById('status').innerText = "stage 3: playing audio...";
         }
     </script>
 </body>
